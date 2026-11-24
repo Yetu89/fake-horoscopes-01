@@ -13,11 +13,30 @@
 //   is swapped for the very real AI failure mode of truncated context,
 //   and the punchline lands on something every Gemini user has seen:
 //   replies that stop making sense because the model lost the thread.
+//   The joke works on two levels at once: to a horoscope reader it
+//   sounds like ordinary Mercury-in-retrograde doom, but to anyone who
+//   has used an LLM it is a literal description of what happens when
+//   the context window fills up — the model cannot see the earlier part
+//   of the conversation any more, so its answers drift and get cut off.
+//   Naming "your last three replies" makes the sting personal instead
+//   of generic: it is not "AI is bad", it is "Gemini, we have all seen
+//   your last three replies". That specificity is exactly what Grok
+//   rewarded with the 9/10.
+//
+// The entry text itself:
+//   "Gemini, this week Mercury enters your context window and your
+//   horoscope gets cut off mid-sentence, which honestly explains your
+//   last three replies."
+//   147 characters, well inside the 200-character limit. The text is
+//   stored verbatim in the TEXT constant below and must never be edited
+//   without re-running the verification step, because the gate checks
+//   the exact bytes.
 //
 // Gate rules (from the bounty kit):
 //   /output/entry.txt must be UTF-8, 1..200 characters, exactly one line.
 //   No trailing newline, no leading/trailing whitespace, no control
-//   characters.
+//   characters. The entry is written to the directory in OUTPUT_DIR
+//   (default "/output").
 //
 // Two layers of defense:
 //   1. validate(TEXT) runs before anything is written and rejects empty
@@ -27,6 +46,10 @@
 //   2. Round-trip check: after writing entry.txt, the file is read back
 //      and compared byte-for-byte with TEXT; any difference throws, so a
 //      bad write can never pass silently.
+//
+// Usage:
+//   node main.ts                      (writes /output/entry.txt)
+//   OUTPUT_DIR=/tmp/out node main.ts  (writes /tmp/out/entry.txt)
 
 import * as fs from "node:fs";
 import * as path from "node:path";
